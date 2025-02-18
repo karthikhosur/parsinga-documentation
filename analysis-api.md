@@ -1,27 +1,30 @@
-# Resume Analyzer System Documentation
+# Resume Analyzer Response Documentation
 
 ## Table of Contents
 1. [Metadata](#metadata)
 2. [Overall Analysis](#overall-analysis)
-3. [Skills Analysis](#skills-analysis)
-4. [Experience Analysis](#experience-analysis)
-5. [Qualifications Analysis](#qualifications-analysis)
-6. [Professional Attributes Analysis](#professional-attributes-analysis)
+3. [Location Analysis](#location-analysis)
+4. [Skills Analysis](#skills-analysis)
+5. [Experience Analysis](#experience-analysis)
+6. [Education Analysis](#education-analysis)
+7. [Cultural Fit Analysis](#cultural-fit-analysis)
 
 ## Metadata
 
 ### Data Quality
 - **resume_completeness** (number: 0-100)
-  - Measures completeness of essential resume components
+  - Measures the completeness of essential resume components
   - Calculation factors:
-    - Contact information (15%)
-    - Work history (30%)
+    - Presence of contact information (15%)
+    - Work history details (30%)
     - Education information (20%)
     - Skills section (25%)
     - Additional sections (10%)
+  - Each section is weighted based on its importance
+  - Missing sections reduce the score proportionally
 
 - **job_description_completeness** (number: 0-100)
-  - Evaluates clarity and completeness of job requirements
+  - Evaluates the clarity and completeness of the job requirements
   - Calculation factors:
     - Role responsibilities (30%)
     - Required skills (25%)
@@ -48,72 +51,39 @@ Boolean flags indicating presence of key information:
 ## Overall Analysis
 
 ### Match Percentage (number: 0-100)
-Comprehensive fit score using weighted criteria:
+- Comprehensive fit score using weighted criteria:
+  - Skills match (40%)
+  - Experience relevance (30%)
+  - Education alignment (20%)
+  - Cultural fit (10%)
+- Calculation process:
+  1. Each component is scored independently
+  2. Weights are applied
+  3. Scores are normalized to 0-100 scale
+  4. Final score is rounded to nearest integer
 
-#### Core Component Weights
-1. Domain Match (40%)
-   - Core Domain Alignment: 25%
-   - Industry Sector Match: 15%
+### Confidence Score (number: 0-100)
+- Indicates reliability of match percentage
+- Based on:
+  - Data completeness (40%)
+  - Information clarity (30%)
+  - Analysis depth (30%)
+- Score ranges:
+  - 90-100: High confidence
+  - 70-89: Good confidence
+  - 50-69: Moderate confidence
+  - Below 50: Low confidence
 
-2. Technical Alignment (30%)
-   - Required Skills Match: 15%
-   - Technical Proficiency: 10%
-   - Tools & Technologies: 5%
-
-3. Professional Experience (20%)
-   - Role Relevance: 10%
-   - Achievement Impact: 10%
-
-4. Transferable Skills (10%)
-   - Leadership & Initiative: 4%
-   - Communication Skills: 3%
-   - Problem-Solving: 3%
-
-### Domain Mismatch Penalties
-- Different field entirely: -70%
-- Related but different field: -40%
-- Same field, different specialization: -20%
-
-### Experience Type Penalties
-- No relevant technical experience: -20%
-- No industry experience: -15%
-- Different work environment: -10%
-
-### Skills Foundation Penalties
-- Missing all core technical skills: -25%
-- Missing critical domain knowledge: -20%
-- Missing essential tools/technologies: -15%
-
-### Score Modifiers
-
-#### Positive Modifiers
-1. Experience Quality
-   - Leadership roles: +2-5%
-   - Project complexity: +1-4%
-   - Industry recognition: +2-3%
-   - Performance metrics: +1-3%
-
-2. Skill Depth
-   - Expert level (7+ years): +4-6%
-   - Advanced level (4-6 years): +2-4%
-   - Intermediate (2-3 years): +1-2%
-   - Basic (0-1 year): No modifier
-
-3. Achievement Impact
-   - Quantifiable results: +2-4%
-   - Innovation demonstrated: +2-3%
-   - Scale of impact: +1-3%
-
-4. Education & Certification
-   - Advanced degrees: +2-4%
-   - Recent certifications: +1-3%
-   - Industry-specific training: +1-2%
-
-#### Negative Modifiers
-- Missing critical skills: -5-10%
-- Career gaps: -2-5%
-- Irrelevant experience: -3-7%
-- Lack of progression: -2-4%
+### Recommendation (string)
+- Structured recommendation format:
+  - Primary recommendation (Proceed/Consider/Decline)
+  - Key justification points
+  - Risk factors or concerns
+  - Next steps
+- Based on:
+  - Match percentage thresholds
+  - Critical requirements met/unmet
+  - Red flags identified
 
 ### Suitability Score
 - **role_alignment** (number: 0-100)
@@ -132,7 +102,7 @@ Comprehensive fit score using weighted criteria:
 
 - **growth_potential** (number: 0-100)
   - Assesses candidate's development trajectory
-  - Based on:
+  - Calculated from:
     - Learning agility indicators (35%)
     - Career progression (35%)
     - Skill development pattern (30%)
@@ -149,6 +119,36 @@ Comprehensive fit score using weighted criteria:
     - High: > 80%
     - Medium: 60-80%
     - Low: < 60%
+
+- **key_discussion_points** (array of strings)
+  - Generated from:
+    - Skill gaps
+    - Experience clarifications
+    - Potential concerns
+    - Cultural fit aspects
+
+## Location Analysis
+
+### Candidate Location
+- **current_location**
+  - Extracted from resume contact information
+  - Components:
+    - city (string)
+    - state (string)
+    - country (string)
+    - time_zone (string)
+
+- **visa_status** (string)
+  - Extracted from:
+    - Explicit mentions
+    - Work authorization statements
+    - Citizenship information
+
+- **work_authorization** (string)
+  - Determined from:
+    - Direct statements
+    - Visa status
+    - Geographic indicators
 
 ## Skills Analysis
 
@@ -175,331 +175,183 @@ Each skill object contains:
     - Accounting for concurrent usage
     - Validating against timeline
 
-### Skill Categorization
+- **last_used** (string: YYYY|current)
+  - Based on:
+    - Most recent role using skill
+    - Project dates
+    - Explicit mentions
+
+- **confidence_score** (number: 0-100)
+  - Reliability of skill assessment
+  - Factors:
+    - Information clarity
+    - Context availability
+    - Timeline consistency
+
+- **relevance_to_role** (string: high|medium|low)
+  - Determined by:
+    - Job description emphasis
+    - Skill importance
+    - Application context
+
+### Skill Categories
 - **technical_skills** (array)
-  - Categories with scores (0-100)
-  - Skills inventory
-  - Proficiency assessment
+  - Hard skills
+  - Technical competencies
+  - Tool proficiencies
 
 - **soft_skills** (array)
+  - Interpersonal abilities
   - Leadership capabilities
-  - Communication abilities
-  - Problem-solving skills
+  - Communication skills
 
-### Skill Gaps
-- **critical_missing** (array)
-  - Required skills not present
-  - Impact assessment
-  - Development priority
+- **domain_knowledge** (array)
+  - Industry-specific expertise
+  - Subject matter knowledge
+  - Market understanding
 
-- **recommended_development** (array)
-  - Suggested skill acquisitions
-  - Training recommendations
-  - Growth areas
+- **tools_and_technologies** (array)
+  - Software applications
+  - Platforms
+  - Technical tools
 
 ## Experience Analysis
 
-### Experience Quality
-- **years_relevant** (number)
-  - Direct domain experience
-  - Related domain experience
-  - Transferable experience
+### Experience Metrics
+- **years_of_experience** (number)
+  - Total professional experience
+  - Calculated by:
+    - Summing role durations
+    - Handling overlaps
+    - Excluding gaps
 
-- **depth_score** (number: 0-100)
-  - Technical complexity
-  - Project scope
-  - Leadership involvement
+- **relevant_experience_years** (number)
+  - Experience in related roles
+  - Factors:
+    - Similar responsibilities
+    - Industry alignment
+    - Skill application
 
-### Positions Analysis
-Each position includes:
+### Relevant Positions (array of objects)
+Each position contains:
 - **title** (string)
 - **company** (string)
 - **duration** (string)
 - **relevance_score** (number: 0-100)
-- **impact_score** (number: 0-100)
+  - Based on:
+    - Role similarity (40%)
+    - Skill overlap (30%)
+    - Industry alignment (30%)
+
+- **key_responsibilities** (array)
+  - Extracted from:
+    - Role descriptions
+    - Achievement statements
+    - Project details
+
 - **achievements** (array)
+  - Quantifiable results
+  - Project outcomes
+  - Recognition received
 
-### Industry Analysis
-- **alignment_score** (number: 0-100)
-- **transition_viability** (number: 0-100)
-- **domain_expertise** (array of objects)
+### Industry Alignment
+- **current_industry** (string)
+- **target_industry** (string)
+- **transition_feasibility** (number: 0-100)
+  - Assessed through:
+    - Transferable skills
+    - Industry overlap
+    - Similar role types
 
-## Qualifications Analysis
+### Career Progression
+- **trajectory** (string: upward|stable|varied|downward)
+  - Analyzed through:
+    - Role progression
+    - Responsibility growth
+    - Title advancement
 
-### Education
+- **leadership_experience** (boolean)
+  - Based on:
+    - Management roles
+    - Team leadership
+    - Project oversight
+
+## Education Analysis
+
+### Degrees (array of objects)
+Each degree contains:
+- **degree** (string)
+- **field** (string)
+- **institution** (string)
+- **year** (string)
 - **relevance_score** (number: 0-100)
-- **degrees** (array of objects)
-  - Degree details
-  - Field relevance
-  - Institution weight
+  - Calculated from:
+    - Field alignment
+    - Level appropriateness
+    - Recent relevance
 
-### Certifications
+### Certifications (array of objects)
+Each certification includes:
+- **name** (string)
+- **issuer** (string)
+- **year** (string)
+- **expiry** (string)
 - **relevance_score** (number: 0-100)
-- **items** (array of objects)
-  - Certification details
-  - Recency assessment
-  - Industry value
+  - Based on:
+    - Role requirements
+    - Industry standards
+    - Current validity
 
-### Continuous Learning
-- **score** (number: 0-100)
-- **indicators** (array)
-  - Learning patterns
-  - Skill progression
-  - Professional development
+## Cultural Fit Analysis
 
-## Professional Attributes Analysis
+- **values_alignment** (number: 0-100)
+  - Assessed through:
+    - Achievement context
+    - Work style indicators
+    - Organizational values
 
-### Leadership Capability
-- **score** (number: 0-100)
-- **evidence** (array)
-  - Leadership experiences
-  - Team management
-  - Project oversight
+- **communication_style** (string)
+  - Analyzed from:
+    - Resume language
+    - Achievement descriptions
+    - Role interactions
 
-### Communication Assessment
-- **score** (number: 0-100)
-- **style** (string)
-- **strengths** (array)
-  - Communication patterns
-  - Documentation ability
-  - Presentation skills
+- **work_style_preferences** (array)
+  - Identified through:
+    - Role patterns
+    - Achievement contexts
+    - Team interactions
 
-### Cultural Alignment
-- **score** (number: 0-100)
-- **indicators** (array)
-  - Value alignment
-  - Work style fit
-  - Team compatibility
+- **team_fit_indicators** (array)
+  - Extracted from:
+    - Collaboration examples
+    - Team achievements
+    - Leadership style
 
-## Detailed Rating Bands
+## Confidence Scoring Methodology
 
-### Elite and Outstanding (96-100%, 93-95%)
-- **Elite Match (96-100%)**
-  - Industry thought leadership
-  - Pioneering achievements
-  - Exceptional expertise in all areas
-  - Innovation track record
-  - Perfect domain alignment
+All confidence scores (0-100) follow this general framework:
+- 90-100: High confidence
+  - Comprehensive data
+  - Clear evidence
+  - Multiple confirmations
 
-- **Outstanding Match (93-95%)**
-  - Exceeds all requirements
-  - Proven industry expertise
-  - Substantial leadership impact
-  - Distinguished achievements
-  - Strong domain alignment
+- 70-89: Good confidence
+  - Substantial data
+  - Minor gaps
+  - Some inference needed
 
-### Excellent Bands (87-92%)
-- **Excellent Plus (90-92%)**
-  - Exceeds most requirements
-  - Notable expertise
-  - Strong leadership experience
-  - Impressive achievements
-  - Clear domain fit
+- 50-69: Moderate confidence
+  - Partial data
+  - Some uncertainty
+  - Significant inference
 
-- **Excellent Match (87-89%)**
-  - Meets all critical requirements
-  - Advanced expertise
-  - Clear leadership capability
-  - Significant achievements
-  - Good domain alignment
+- Below 50: Low confidence
+  - Limited data
+  - High uncertainty
+  - Heavy inference needed
 
-### Very Strong and Strong Bands (78-86%)
-- **Very Strong Match (84-86%)**
-  - Meets all key requirements
-  - Demonstrated expertise
-  - Management experience
-  - Notable achievements
-  - Solid domain understanding
-
-- **Strong Plus Match (81-83%)**
-  - Meets critical requirements
-  - Strong expertise
-  - Team leadership experience
-  - Proven achievements
-  - Relevant domain experience
-
-- **Strong Match (78-80%)**
-  - Meets most requirements
-  - Solid expertise
-  - Project leadership
-  - Clear achievements
-  - Basic domain familiarity
-
-### Good Bands (72-77%)
-- **Good Plus Match (75-77%)**
-  - Meets core requirements
-  - Reliable expertise
-  - Team contribution
-  - Documented achievements
-  - Domain awareness
-
-- **Good Match (72-74%)**
-  - Meets basic requirements
-  - Practical expertise
-  - Collaborative experience
-  - Some achievements
-  - Related domain exposure
-
-### Satisfactory Bands (66-71%)
-- **Satisfactory Plus (69-71%)**
-  - Meets minimum requirements
-  - Working expertise
-  - Team experience
-  - Basic achievements
-  - Limited domain knowledge
-
-- **Satisfactory Match (66-68%)**
-  - Basic requirements met
-  - Functional expertise
-  - Some team experience
-  - Limited achievements
-  - Minimal domain exposure
-
-### Moderate Bands (60-65%)
-- **Moderate Plus (63-65%)**
-  - Most basic requirements
-  - Developing expertise
-  - Entry-level experience
-  - Few achievements
-  - Basic domain understanding
-
-- **Moderate Match (60-62%)**
-  - Some basic requirements
-  - Basic expertise
-  - Limited experience
-  - Minimal achievements
-  - Limited domain awareness
-
-### Fair Bands (54-59%)
-- **Fair Plus Match (57-59%)**
-  - Minimum requirements
-  - Elementary expertise
-  - Very limited experience
-  - Few relevant achievements
-  - Minimal domain connection
-
-- **Fair Match (54-56%)**
-  - Below minimum requirements
-  - Basic knowledge
-  - Minimal experience
-  - Limited relevant achievements
-  - Weak domain alignment
-
-### Basic Bands (48-53%)
-- **Basic Plus Match (51-53%)**
-  - Missing requirements
-  - Fundamental knowledge
-  - Entry-level background
-  - No relevant achievements
-  - Poor domain fit
-
-- **Basic Match (48-50%)**
-  - Significant gaps
-  - Basic understanding
-  - No relevant experience
-  - No achievements
-  - Misaligned domain
-
-### Limited Bands (42-47%)
-- **Limited Plus Match (45-47%)**
-  - Major requirement gaps
-  - Limited understanding
-  - Unrelated experience
-  - No relevant achievements
-  - Domain mismatch
-
-- **Limited Match (42-44%)**
-  - Missing critical elements
-  - Minimal understanding
-  - Irrelevant experience
-  - No achievements
-  - Significant domain mismatch
-
-### Minimal Bands (36-41%)
-- **Minimal Plus Match (39-41%)**
-  - Substantial gaps
-  - Very basic understanding
-  - No applicable experience
-  - No achievements
-  - Major domain mismatch
-
-- **Minimal Match (36-38%)**
-  - Critical requirements missing
-  - Limited understanding
-  - No relevant background
-  - No achievements
-  - Complete domain mismatch
-
-### Poor Bands (30-35%)
-- **Poor Plus Match (33-35%)**
-  - Major deficiencies
-  - Unclear understanding
-  - No related experience
-  - No achievements
-  - Fundamental domain mismatch
-
-- **Poor Match (30-32%)**
-  - Insufficient qualifications
-  - Minimal understanding
-  - No relevant experience
-  - No achievements
-  - Total domain misalignment
-
-### Very Poor Bands (24-29%)
-- **Very Poor Plus (27-29%)**
-  - Severely lacking qualifications
-  - Very limited understanding
-  - No applicable experience
-  - No achievements
-  - Severe domain mismatch
-
-- **Very Poor Match (24-26%)**
-  - Highly insufficient
-  - Minimal comprehension
-  - No relevant background
-  - No achievements
-  - Critical domain mismatch
-
-### Inadequate Bands (18-23%)
-- **Inadequate Plus (21-23%)**
-  - Critically insufficient
-  - Basic awareness only
-  - No relevant experience
-  - No achievements
-  - Maximum domain mismatch
-
-- **Inadequate Match (18-20%)**
-  - Severely misaligned
-  - Minimal awareness
-  - No applicable background
-  - No achievements
-  - Complete domain disconnect
-
-### Mismatched Bands (0-17%)
-- **Mismatched Plus (15-17%)**
-  - Fundamentally misaligned
-  - Very limited awareness
-  - No relevant background
-  - No achievements
-  - Total mismatch
-
-- **Mismatched (12-14%)**
-  - Completely misaligned
-  - Minimal relevance
-  - No applicable experience
-  - No achievements
-  - Absolute mismatch
-
-- **Highly Mismatched (6-11%)**
-  - No alignment
-  - No relevant knowledge
-  - No applicable background
-  - No achievements
-  - Complete mismatch
-
-- **Completely Mismatched (0-5%)**
-  - No matches found
-  - No relevant elements
-  - No applicable background
-  - Complete mismatch
-  - Zero alignment
+Confidence scores are calculated by evaluating:
+1. Data completeness (40%)
+2. Information clarity (30%)
+3. Verification potential (30%)
